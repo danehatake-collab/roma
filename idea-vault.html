@@ -1,0 +1,2459 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0a0a0f">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>IDEA VAULT</title>
+    <link rel="manifest" href="data:application/json,{&quot;name&quot;:&quot;IDEA VAULT&quot;,&quot;short_name&quot;:&quot;IdeaVault&quot;,&quot;start_url&quot;:&quot;.&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;background_color&quot;:&quot;%230a0a0f&quot;,&quot;theme_color&quot;:&quot;%230a0a0f&quot;}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* ========== CSS VARIABLES ========== */
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-tertiary: #1a1a25;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-hover: rgba(255, 255, 255, 0.06);
+            
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.6);
+            --text-tertiary: rgba(255, 255, 255, 0.4);
+            
+            --accent-orange: #ff6b35;
+            --accent-red: #ff3366;
+            --accent-purple: #a855f7;
+            --accent-green: #00ff88;
+            --accent-yellow: #ffc107;
+            --accent-blue: #3b82f6;
+            
+            --gradient-primary: linear-gradient(135deg, #ff6b35, #ff3366);
+            --gradient-purple: linear-gradient(135deg, #a855f7, #6366f1);
+            --gradient-green: linear-gradient(135deg, #00ff88, #00cc6a);
+            --gradient-yellow: linear-gradient(135deg, #ffc107, #ff9800);
+            --gradient-red: linear-gradient(135deg, #ff3366, #dc2626);
+            
+            --glow-orange: 0 0 30px rgba(255, 107, 53, 0.3);
+            --glow-green: 0 0 30px rgba(0, 255, 136, 0.3);
+            --glow-yellow: 0 0 30px rgba(255, 193, 7, 0.3);
+            --glow-red: 0 0 30px rgba(255, 51, 102, 0.3);
+            --glow-purple: 0 0 30px rgba(168, 85, 247, 0.3);
+            
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 20px;
+            --radius-xl: 28px;
+            
+            --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4);
+            --shadow-elevated: 0 8px 40px rgba(0, 0, 0, 0.6);
+            
+            --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-normal: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            --font-display: 'Outfit', sans-serif;
+            --font-body: 'DM Sans', sans-serif;
+            
+            /* Thresholds */
+            --threshold-viral: 500000;
+            --threshold-average: 50000;
+        }
+
+        /* ========== RESET & BASE ========== */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            min-height: 100dvh;
+            overflow-x: hidden;
+            line-height: 1.5;
+        }
+
+        /* Background ambient glow */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(255, 107, 53, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.06) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(0, 255, 136, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* ========== SCROLLBAR ========== */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        /* ========== HEADER ========== */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 16px 24px;
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .header-content {
+            max-width: 1800px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-primary);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: var(--glow-orange);
+        }
+
+        .logo-text {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 1.5rem;
+            letter-spacing: -0.03em;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* ========== FILTERS ========== */
+        .filters {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            position: relative;
+            min-width: 200px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 16px 10px 40px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            font-family: var(--font-body);
+            transition: var(--transition-fast);
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--accent-orange);
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+        }
+
+        .search-box input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .search-box svg {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            color: var(--text-tertiary);
+        }
+
+        .filter-select {
+            padding: 10px 36px 10px 14px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            font-family: var(--font-body);
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='rgba(255,255,255,0.4)' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            transition: var(--transition-fast);
+        }
+
+        .filter-select:hover {
+            background-color: var(--glass-hover);
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--accent-orange);
+        }
+
+        .btn-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .btn-icon:hover {
+            background: var(--glass-hover);
+            color: var(--text-primary);
+        }
+
+        .btn-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* ========== KANBAN BOARD ========== */
+        .kanban-container {
+            padding: 24px;
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+
+        .kanban-board {
+            display: flex;
+            gap: 20px;
+            min-height: calc(100vh - 140px);
+            min-height: calc(100dvh - 140px);
+            padding-bottom: 100px;
+        }
+
+        .kanban-column {
+            flex: 0 0 320px;
+            min-width: 320px;
+            display: flex;
+            flex-direction: column;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            transition: var(--transition-fast);
+        }
+
+        .kanban-column.drag-over {
+            background: rgba(255, 107, 53, 0.05);
+            border-color: rgba(255, 107, 53, 0.3);
+        }
+
+        .column-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .column-title {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.875rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .column-title .icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .column-count {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 4px 10px;
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-tertiary);
+        }
+
+        .column-cards {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* ========== IDEA CARD ========== */
+        .idea-card {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            cursor: grab;
+            transition: var(--transition-normal);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .idea-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: var(--radius-lg);
+            padding: 1px;
+            background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .idea-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-elevated);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .idea-card:active {
+            cursor: grabbing;
+        }
+
+        .idea-card.dragging {
+            opacity: 0.5;
+            transform: scale(1.02) rotate(2deg);
+        }
+
+        /* Success indicators */
+        .idea-card.success-viral {
+            border-color: var(--accent-green);
+            box-shadow: var(--glow-green);
+        }
+
+        .idea-card.success-average {
+            border-color: var(--accent-yellow);
+            box-shadow: var(--glow-yellow);
+        }
+
+        .idea-card.success-fail {
+            border-color: var(--accent-red);
+            box-shadow: var(--glow-red);
+        }
+
+        .card-category {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: var(--radius-sm);
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            margin-bottom: 10px;
+        }
+
+        .category-marketing { background: rgba(168, 85, 247, 0.2); color: var(--accent-purple); }
+        .category-growth { background: rgba(59, 130, 246, 0.2); color: var(--accent-blue); }
+        .category-monetization { background: rgba(0, 255, 136, 0.2); color: var(--accent-green); }
+        .category-mindset { background: rgba(255, 193, 7, 0.2); color: var(--accent-yellow); }
+        .category-personal { background: rgba(255, 107, 53, 0.2); color: var(--accent-orange); }
+
+        .card-title {
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 1rem;
+            line-height: 1.4;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-hook {
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .card-hook svg {
+            flex-shrink: 0;
+            width: 14px;
+            height: 14px;
+            color: var(--accent-yellow);
+            margin-top: 2px;
+        }
+
+        .card-hook span {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+        }
+
+        .card-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .card-meta-item svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        .card-meta-item.deadline {
+            color: var(--accent-red);
+        }
+
+        .card-analytics {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .analytics-views {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .analytics-views-number {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--text-primary);
+        }
+
+        .analytics-views-change {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .analytics-views-change.positive {
+            background: rgba(0, 255, 136, 0.15);
+            color: var(--accent-green);
+        }
+
+        .analytics-views-change.negative {
+            background: rgba(255, 51, 102, 0.15);
+            color: var(--accent-red);
+        }
+
+        .analytics-stats {
+            display: flex;
+            gap: 12px;
+        }
+
+        .analytics-stat {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .analytics-stat svg {
+            width: 12px;
+            height: 12px;
+            opacity: 0.7;
+        }
+
+        /* ========== FAB BUTTON ========== */
+        .fab {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--glow-orange), var(--shadow-elevated);
+            transition: var(--transition-normal);
+            z-index: 90;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+            animation: none;
+        }
+
+        .fab:active {
+            transform: scale(0.95);
+        }
+
+        .fab svg {
+            width: 28px;
+            height: 28px;
+            color: white;
+        }
+
+        /* ========== MODAL ========== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 200;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition-normal);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            width: 100%;
+            max-width: 560px;
+            max-height: 90vh;
+            max-height: 90dvh;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+            overflow: hidden;
+            transform: translateY(100%);
+            transition: var(--transition-slow);
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        @media (min-width: 640px) {
+            .modal-overlay {
+                align-items: center;
+                padding: 24px;
+            }
+            
+            .modal {
+                border-radius: var(--radius-xl);
+                max-height: 85vh;
+            }
+        }
+
+        .modal-header {
+            padding: 24px 24px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-title {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 1.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .modal-close {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .modal-close:hover {
+            background: var(--glass-hover);
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 24px;
+            overflow-y: auto;
+            max-height: calc(90vh - 180px);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .form-label .required {
+            color: var(--accent-red);
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-family: var(--font-body);
+            transition: var(--transition-fast);
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--accent-orange);
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+        }
+
+        .form-input::placeholder,
+        .form-textarea::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='rgba(255,255,255,0.4)' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+        }
+
+        .modal-footer {
+            padding: 0 24px 24px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 16px 24px;
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: var(--font-body);
+            cursor: pointer;
+            transition: var(--transition-fast);
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: var(--glow-orange);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--glow-orange), var(--shadow-elevated);
+        }
+
+        .btn-secondary {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--glass-hover);
+        }
+
+        .btn-danger {
+            background: rgba(255, 51, 102, 0.2);
+            color: var(--accent-red);
+        }
+
+        .btn-danger:hover {
+            background: rgba(255, 51, 102, 0.3);
+        }
+
+        /* ========== DETAIL MODAL ========== */
+        .detail-section {
+            margin-bottom: 24px;
+        }
+
+        .detail-section-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-tertiary);
+            margin-bottom: 8px;
+        }
+
+        .detail-hook {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 16px;
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.2);
+            border-radius: var(--radius-md);
+        }
+
+        .detail-hook svg {
+            flex-shrink: 0;
+            width: 20px;
+            height: 20px;
+            color: var(--accent-yellow);
+        }
+
+        .detail-notes {
+            padding: 16px;
+            background: var(--glass-bg);
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            line-height: 1.7;
+            white-space: pre-wrap;
+        }
+
+        .detail-references {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .reference-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            background: var(--glass-bg);
+            border-radius: var(--radius-md);
+            color: var(--accent-blue);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: var(--transition-fast);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .reference-link:hover {
+            background: var(--glass-hover);
+        }
+
+        .reference-link svg {
+            flex-shrink: 0;
+            width: 16px;
+            height: 16px;
+        }
+
+        .detail-deadline {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            background: rgba(255, 51, 102, 0.1);
+            border: 1px solid rgba(255, 51, 102, 0.2);
+            border-radius: var(--radius-md);
+            color: var(--accent-red);
+            font-weight: 500;
+        }
+
+        .detail-deadline svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Analytics section in detail */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .analytics-card {
+            padding: 16px;
+            background: var(--glass-bg);
+            border-radius: var(--radius-md);
+            text-align: center;
+        }
+
+        .analytics-card-value {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .analytics-card-label {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .analytics-card.views {
+            grid-column: span 2;
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.15), rgba(168, 85, 247, 0.15));
+        }
+
+        .analytics-card.views .analytics-card-value {
+            font-size: 2.5rem;
+        }
+
+        .retention-bar {
+            margin-top: 16px;
+        }
+
+        .retention-bar-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.875rem;
+        }
+
+        .retention-bar-track {
+            height: 8px;
+            background: var(--glass-bg);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .retention-bar-fill {
+            height: 100%;
+            background: var(--gradient-green);
+            border-radius: 4px;
+            transition: width 0.5s ease-out;
+        }
+
+        /* ========== SETTINGS PANEL ========== */
+        .settings-panel {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 100%;
+            max-width: 400px;
+            height: 100%;
+            background: var(--bg-secondary);
+            border-left: 1px solid var(--glass-border);
+            z-index: 250;
+            transform: translateX(100%);
+            transition: var(--transition-slow);
+            overflow-y: auto;
+        }
+
+        .settings-panel.active {
+            transform: translateX(0);
+        }
+
+        .settings-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 240;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition-normal);
+        }
+
+        .settings-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .settings-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .settings-title {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .settings-section {
+            padding: 24px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .settings-section-title {
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 16px;
+        }
+
+        .category-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .category-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--glass-bg);
+            border-radius: var(--radius-md);
+        }
+
+        .category-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .category-name {
+            flex: 1;
+            font-size: 0.875rem;
+        }
+
+        .threshold-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .threshold-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .threshold-indicator {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+        }
+
+        .threshold-indicator.viral { background: var(--accent-green); }
+        .threshold-indicator.average { background: var(--accent-yellow); }
+
+        .threshold-item input {
+            flex: 1;
+            padding: 10px 14px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            font-family: var(--font-body);
+        }
+
+        .threshold-item input:focus {
+            outline: none;
+            border-color: var(--accent-orange);
+        }
+
+        .export-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .export-buttons .btn {
+            justify-content: center;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ========== EMPTY STATE ========== */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            text-align: center;
+            color: var(--text-tertiary);
+        }
+
+        .empty-state svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+
+        .empty-state p {
+            font-size: 0.875rem;
+        }
+
+        /* ========== TOAST NOTIFICATION ========== */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            padding: 16px 24px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            box-shadow: var(--shadow-elevated);
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition-normal);
+            z-index: 300;
+        }
+
+        .toast.active {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            .header {
+                padding: 12px 16px;
+            }
+            
+            .header-content {
+                flex-wrap: wrap;
+            }
+            
+            .logo-text {
+                font-size: 1.25rem;
+            }
+            
+            .filters {
+                width: 100%;
+                order: 3;
+            }
+            
+            .search-box {
+                flex: 1;
+                min-width: 0;
+            }
+            
+            .kanban-container {
+                padding: 16px;
+            }
+            
+            .kanban-column {
+                flex: 0 0 280px;
+                min-width: 280px;
+            }
+            
+            .fab {
+                bottom: 24px;
+                right: 24px;
+                width: 56px;
+                height: 56px;
+            }
+        }
+
+        /* ========== ANIMATIONS ========== */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .idea-card {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes glow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .success-viral::after,
+        .success-average::after,
+        .success-fail::after {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: var(--radius-lg);
+            animation: glow 2s infinite;
+            pointer-events: none;
+        }
+
+        .success-viral::after { box-shadow: inset 0 0 20px rgba(0, 255, 136, 0.2); }
+        .success-average::after { box-shadow: inset 0 0 20px rgba(255, 193, 7, 0.2); }
+        .success-fail::after { box-shadow: inset 0 0 20px rgba(255, 51, 102, 0.2); }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">💡</div>
+                <span class="logo-text">IDEA VAULT</span>
+            </div>
+            
+            <div class="filters">
+                <div class="search-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="m21 21-4.35-4.35"/>
+                    </svg>
+                    <input type="text" id="searchInput" placeholder="Поиск идей...">
+                </div>
+                
+                <select class="filter-select" id="categoryFilter">
+                    <option value="">Все категории</option>
+                    <option value="marketing">Маркетинг</option>
+                    <option value="growth">Рост аудитории</option>
+                    <option value="monetization">Монетизация</option>
+                    <option value="mindset">Мышление</option>
+                    <option value="personal">Личное</option>
+                </select>
+                
+                <select class="filter-select" id="periodFilter">
+                    <option value="">Всё время</option>
+                    <option value="week">Неделя</option>
+                    <option value="month">Месяц</option>
+                    <option value="quarter">Квартал</option>
+                </select>
+                
+                <button class="btn-icon" id="settingsBtn" title="Настройки">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Kanban Board -->
+    <div class="kanban-container">
+        <div class="kanban-board" id="kanbanBoard">
+            <!-- INBOX Column -->
+            <div class="kanban-column" data-column="inbox">
+                <div class="column-header">
+                    <div class="column-title">
+                        <span class="icon">📥</span>
+                        INBOX
+                    </div>
+                    <span class="column-count" data-count="inbox">0</span>
+                </div>
+                <div class="column-cards" data-column-cards="inbox"></div>
+            </div>
+
+            <!-- READY Column -->
+            <div class="kanban-column" data-column="ready">
+                <div class="column-header">
+                    <div class="column-title">
+                        <span class="icon">✅</span>
+                        READY
+                    </div>
+                    <span class="column-count" data-count="ready">0</span>
+                </div>
+                <div class="column-cards" data-column-cards="ready"></div>
+            </div>
+
+            <!-- IN PROGRESS Column -->
+            <div class="kanban-column" data-column="progress">
+                <div class="column-header">
+                    <div class="column-title">
+                        <span class="icon">🎬</span>
+                        IN PROGRESS
+                    </div>
+                    <span class="column-count" data-count="progress">0</span>
+                </div>
+                <div class="column-cards" data-column-cards="progress"></div>
+            </div>
+
+            <!-- PUBLISHED Column -->
+            <div class="kanban-column" data-column="published">
+                <div class="column-header">
+                    <div class="column-title">
+                        <span class="icon">🚀</span>
+                        PUBLISHED
+                    </div>
+                    <span class="column-count" data-count="published">0</span>
+                </div>
+                <div class="column-cards" data-column-cards="published"></div>
+            </div>
+
+            <!-- ANALYZED Column -->
+            <div class="kanban-column" data-column="analyzed">
+                <div class="column-header">
+                    <div class="column-title">
+                        <span class="icon">📊</span>
+                        ANALYZED
+                    </div>
+                    <span class="column-count" data-count="analyzed">0</span>
+                </div>
+                <div class="column-cards" data-column-cards="analyzed"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAB Button -->
+    <button class="fab" id="fabBtn" title="Новая идея">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M12 5v14M5 12h14"/>
+        </svg>
+    </button>
+
+    <!-- Create/Edit Modal -->
+    <div class="modal-overlay" id="createModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Новая идея</h2>
+                <button class="modal-close" id="closeCreateModal">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6 6 18M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <form id="ideaForm">
+                    <input type="hidden" id="ideaId">
+                    
+                    <div class="form-group">
+                        <label class="form-label">
+                            Заголовок идеи <span class="required">*</span>
+                        </label>
+                        <input type="text" class="form-input" id="ideaTitle" placeholder="О чём будет ролик?" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Hook (первые 3 сек)</label>
+                        <input type="text" class="form-input" id="ideaHook" placeholder="Чем зацепишь внимание?">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Категория</label>
+                        <select class="form-select" id="ideaCategory">
+                            <option value="">Без категории</option>
+                            <option value="marketing">Маркетинг</option>
+                            <option value="growth">Рост аудитории</option>
+                            <option value="monetization">Монетизация</option>
+                            <option value="mindset">Мышление</option>
+                            <option value="personal">Личное</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Заметки</label>
+                        <textarea class="form-textarea" id="ideaNotes" placeholder="Детали, структура, важные моменты..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Референсы (ссылки через Enter)</label>
+                        <textarea class="form-textarea" id="ideaReferences" placeholder="https://...&#10;https://..." style="min-height: 70px;"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Дедлайн</label>
+                        <input type="date" class="form-input" id="ideaDeadline">
+                    </div>
+                </form>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="cancelCreate">Отмена</button>
+                <button type="submit" form="ideaForm" class="btn btn-primary" id="saveIdea">Сохранить в INBOX</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detail Modal -->
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="detailTitle">Детали идеи</h2>
+                <button class="modal-close" id="closeDetailModal">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6 6 18M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="modal-body" id="detailBody">
+                <!-- Content injected dynamically -->
+            </div>
+            
+            <div class="modal-footer" id="detailFooter">
+                <button type="button" class="btn btn-secondary" id="editIdea">Редактировать</button>
+                <button type="button" class="btn btn-secondary" id="duplicateIdea">Дублировать</button>
+                <button type="button" class="btn btn-danger" id="deleteIdea">Удалить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Modal -->
+    <div class="modal-overlay" id="analyticsModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">📊 Заполнить аналитику</h2>
+                <button class="modal-close" id="closeAnalyticsModal">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6 6 18M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <form id="analyticsForm">
+                    <input type="hidden" id="analyticsIdeaId">
+                    
+                    <div class="form-group">
+                        <label class="form-label">👁 Просмотры</label>
+                        <input type="number" class="form-input" id="analyticsViews" placeholder="0" min="0">
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div class="form-group">
+                            <label class="form-label">💬 Комментарии</label>
+                            <input type="number" class="form-input" id="analyticsComments" placeholder="0" min="0">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">🔄 Репосты</label>
+                            <input type="number" class="form-input" id="analyticsReposts" placeholder="0" min="0">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">🔖 Сохранения</label>
+                            <input type="number" class="form-input" id="analyticsSaves" placeholder="0" min="0">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">⏱ Удержание (сек)</label>
+                            <input type="number" class="form-input" id="analyticsRetention" placeholder="0" min="0">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">📈 Охват новой аудитории (%)</label>
+                        <input type="number" class="form-input" id="analyticsReach" placeholder="0" min="0" max="100">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">💰 Лиды</label>
+                        <input type="number" class="form-input" id="analyticsLeads" placeholder="0" min="0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">🔗 Ссылка на ролик</label>
+                        <input type="url" class="form-input" id="analyticsLink" placeholder="https://instagram.com/...">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">⏱ Длительность ролика (сек)</label>
+                        <input type="number" class="form-input" id="analyticsDuration" placeholder="30" min="1">
+                    </div>
+                </form>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="skipAnalytics">Позже</button>
+                <button type="submit" form="analyticsForm" class="btn btn-primary" id="saveAnalytics">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Panel -->
+    <div class="settings-overlay" id="settingsOverlay"></div>
+    <div class="settings-panel" id="settingsPanel">
+        <div class="settings-header">
+            <h2 class="settings-title">⚙️ Настройки</h2>
+            <button class="modal-close" id="closeSettings">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 6 6 18M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        
+        <div class="settings-section">
+            <h3 class="settings-section-title">Категории</h3>
+            <div class="category-list">
+                <div class="category-item">
+                    <div class="category-color" style="background: var(--accent-purple);"></div>
+                    <span class="category-name">Маркетинг</span>
+                </div>
+                <div class="category-item">
+                    <div class="category-color" style="background: var(--accent-blue);"></div>
+                    <span class="category-name">Рост аудитории</span>
+                </div>
+                <div class="category-item">
+                    <div class="category-color" style="background: var(--accent-green);"></div>
+                    <span class="category-name">Монетизация</span>
+                </div>
+                <div class="category-item">
+                    <div class="category-color" style="background: var(--accent-yellow);"></div>
+                    <span class="category-name">Мышление</span>
+                </div>
+                <div class="category-item">
+                    <div class="category-color" style="background: var(--accent-orange);"></div>
+                    <span class="category-name">Личное</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="settings-section">
+            <h3 class="settings-section-title">Пороги успешности</h3>
+            <div class="threshold-inputs">
+                <div class="threshold-item">
+                    <div class="threshold-indicator viral"></div>
+                    <span style="font-size: 0.875rem; color: var(--text-secondary); min-width: 60px;">Вирал ≥</span>
+                    <input type="number" id="thresholdViral" value="500000" min="0">
+                </div>
+                <div class="threshold-item">
+                    <div class="threshold-indicator average"></div>
+                    <span style="font-size: 0.875rem; color: var(--text-secondary); min-width: 60px;">Средний ≥</span>
+                    <input type="number" id="thresholdAverage" value="50000" min="0">
+                </div>
+                <p style="font-size: 0.75rem; color: var(--text-tertiary); margin-top: 8px;">
+                    Ниже среднего порога = провал (красный)
+                </p>
+            </div>
+        </div>
+        
+        <div class="settings-section">
+            <h3 class="settings-section-title">Данные</h3>
+            <div class="export-buttons">
+                <button class="btn btn-secondary" id="exportData">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Экспорт (JSON)
+                </button>
+                <label class="btn btn-secondary" style="cursor: pointer;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17 8 12 3 7 8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                    Импорт
+                    <input type="file" id="importData" accept=".json" style="display: none;">
+                </label>
+                <button class="btn btn-danger" id="clearData">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"/>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                    </svg>
+                    Очистить всё
+                </button>
+            </div>
+        </div>
+        
+        <div class="settings-section">
+            <h3 class="settings-section-title">О приложении</h3>
+            <p style="font-size: 0.875rem; color: var(--text-secondary); line-height: 1.6;">
+                <strong>IDEA VAULT</strong> v1.0<br><br>
+                Канбан-доска для управления идеями контента с аналитикой успешности.<br><br>
+                Все данные хранятся локально на твоём устройстве.
+            </p>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ========== APP STATE ==========
+        const APP_KEY = 'ideaVault';
+        let ideas = [];
+        let settings = {
+            thresholdViral: 500000,
+            thresholdAverage: 50000
+        };
+        let draggedCard = null;
+        let currentDetailId = null;
+
+        // ========== DOM ELEMENTS ==========
+        const elements = {
+            kanbanBoard: document.getElementById('kanbanBoard'),
+            fabBtn: document.getElementById('fabBtn'),
+            createModal: document.getElementById('createModal'),
+            detailModal: document.getElementById('detailModal'),
+            analyticsModal: document.getElementById('analyticsModal'),
+            settingsPanel: document.getElementById('settingsPanel'),
+            settingsOverlay: document.getElementById('settingsOverlay'),
+            searchInput: document.getElementById('searchInput'),
+            categoryFilter: document.getElementById('categoryFilter'),
+            periodFilter: document.getElementById('periodFilter'),
+            ideaForm: document.getElementById('ideaForm'),
+            analyticsForm: document.getElementById('analyticsForm'),
+            toast: document.getElementById('toast')
+        };
+
+        // ========== UTILITIES ==========
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+
+        function formatNumber(num) {
+            if (!num) return '0';
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+            return num.toString();
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
+        }
+
+        function isDeadlineSoon(dateStr) {
+            if (!dateStr) return false;
+            const deadline = new Date(dateStr);
+            const today = new Date();
+            const diffDays = Math.ceil((deadline - today) / (1000 * 60 * 60 * 24));
+            return diffDays <= 3;
+        }
+
+        function showToast(message) {
+            elements.toast.textContent = message;
+            elements.toast.classList.add('active');
+            setTimeout(() => elements.toast.classList.remove('active'), 3000);
+        }
+
+        // ========== STORAGE ==========
+        function loadData() {
+            try {
+                const data = localStorage.getItem(APP_KEY);
+                if (data) {
+                    const parsed = JSON.parse(data);
+                    ideas = parsed.ideas || [];
+                    settings = { ...settings, ...parsed.settings };
+                }
+            } catch (e) {
+                console.error('Error loading data:', e);
+            }
+            updateThresholdInputs();
+        }
+
+        function saveData() {
+            try {
+                localStorage.setItem(APP_KEY, JSON.stringify({ ideas, settings }));
+            } catch (e) {
+                console.error('Error saving data:', e);
+            }
+        }
+
+        // ========== CATEGORY HELPERS ==========
+        const categoryMap = {
+            marketing: { name: 'Маркетинг', class: 'category-marketing' },
+            growth: { name: 'Рост', class: 'category-growth' },
+            monetization: { name: 'Монетизация', class: 'category-monetization' },
+            mindset: { name: 'Мышление', class: 'category-mindset' },
+            personal: { name: 'Личное', class: 'category-personal' }
+        };
+
+        function getCategoryBadge(category) {
+            if (!category || !categoryMap[category]) return '';
+            const cat = categoryMap[category];
+            return `<span class="card-category ${cat.class}">${cat.name}</span>`;
+        }
+
+        // ========== SUCCESS INDICATOR ==========
+        function getSuccessClass(views) {
+            if (!views) return '';
+            if (views >= settings.thresholdViral) return 'success-viral';
+            if (views >= settings.thresholdAverage) return 'success-average';
+            return 'success-fail';
+        }
+
+        // ========== RENDER CARDS ==========
+        function renderCard(idea) {
+            const successClass = getSuccessClass(idea.analytics?.views);
+            const hasAnalytics = idea.analytics && idea.analytics.views;
+            
+            let analyticsHtml = '';
+            if (hasAnalytics) {
+                const avg = getAverageViews();
+                const change = avg > 0 ? ((idea.analytics.views - avg) / avg * 100).toFixed(0) : 0;
+                const changeClass = change >= 0 ? 'positive' : 'negative';
+                const changeSign = change >= 0 ? '+' : '';
+                
+                analyticsHtml = `
+                    <div class="card-analytics">
+                        <div class="analytics-views">
+                            <span class="analytics-views-number">${formatNumber(idea.analytics.views)}</span>
+                            ${avg > 0 ? `<span class="analytics-views-change ${changeClass}">${changeSign}${change}%</span>` : ''}
+                        </div>
+                        <div class="analytics-stats">
+                            <span class="analytics-stat">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                                ${formatNumber(idea.analytics.comments || 0)}
+                            </span>
+                            <span class="analytics-stat">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+                                ${formatNumber(idea.analytics.reposts || 0)}
+                            </span>
+                            <span class="analytics-stat">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                                ${formatNumber(idea.analytics.saves || 0)}
+                            </span>
+                        </div>
+                    </div>
+                `;
+            }
+
+            const refCount = idea.references ? idea.references.split('\n').filter(r => r.trim()).length : 0;
+
+            return `
+                <div class="idea-card ${successClass}" data-id="${idea.id}" draggable="true">
+                    ${getCategoryBadge(idea.category)}
+                    <h3 class="card-title">${escapeHtml(idea.title)}</h3>
+                    ${idea.hook ? `
+                        <div class="card-hook">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                            <span>${escapeHtml(idea.hook)}</span>
+                        </div>
+                    ` : ''}
+                    <div class="card-meta">
+                        <span class="card-meta-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            ${formatDate(idea.createdAt)}
+                        </span>
+                        ${refCount > 0 ? `
+                            <span class="card-meta-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                                ${refCount}
+                            </span>
+                        ` : ''}
+                        ${idea.deadline ? `
+                            <span class="card-meta-item ${isDeadlineSoon(idea.deadline) ? 'deadline' : ''}">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                ${formatDate(idea.deadline)}
+                            </span>
+                        ` : ''}
+                    </div>
+                    ${analyticsHtml}
+                </div>
+            `;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function getAverageViews() {
+            const withViews = ideas.filter(i => i.analytics?.views);
+            if (withViews.length === 0) return 0;
+            return withViews.reduce((sum, i) => sum + i.analytics.views, 0) / withViews.length;
+        }
+
+        // ========== RENDER BOARD ==========
+        function renderBoard() {
+            const columns = ['inbox', 'ready', 'progress', 'published', 'analyzed'];
+            const filteredIdeas = filterIdeas();
+
+            columns.forEach(column => {
+                const container = document.querySelector(`[data-column-cards="${column}"]`);
+                const countEl = document.querySelector(`[data-count="${column}"]`);
+                const columnIdeas = filteredIdeas.filter(i => i.column === column);
+                
+                countEl.textContent = columnIdeas.length;
+                
+                if (columnIdeas.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                <path d="M12 8v8M8 12h8"/>
+                            </svg>
+                            <p>Пусто</p>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = columnIdeas.map(renderCard).join('');
+                }
+            });
+
+            attachCardListeners();
+        }
+
+        function filterIdeas() {
+            const search = elements.searchInput.value.toLowerCase().trim();
+            const category = elements.categoryFilter.value;
+            const period = elements.periodFilter.value;
+            
+            let filtered = [...ideas];
+            
+            // Search filter
+            if (search) {
+                filtered = filtered.filter(i => 
+                    i.title.toLowerCase().includes(search) ||
+                    (i.hook && i.hook.toLowerCase().includes(search)) ||
+                    (i.notes && i.notes.toLowerCase().includes(search))
+                );
+            }
+            
+            // Category filter
+            if (category) {
+                filtered = filtered.filter(i => i.category === category);
+            }
+            
+            // Period filter
+            if (period) {
+                const now = new Date();
+                let cutoff;
+                if (period === 'week') cutoff = new Date(now - 7 * 24 * 60 * 60 * 1000);
+                else if (period === 'month') cutoff = new Date(now - 30 * 24 * 60 * 60 * 1000);
+                else if (period === 'quarter') cutoff = new Date(now - 90 * 24 * 60 * 60 * 1000);
+                
+                filtered = filtered.filter(i => new Date(i.createdAt) >= cutoff);
+            }
+            
+            return filtered;
+        }
+
+        // ========== DRAG & DROP ==========
+        function attachCardListeners() {
+            document.querySelectorAll('.idea-card').forEach(card => {
+                card.addEventListener('dragstart', handleDragStart);
+                card.addEventListener('dragend', handleDragEnd);
+                card.addEventListener('click', handleCardClick);
+            });
+        }
+
+        function handleDragStart(e) {
+            draggedCard = e.target;
+            draggedCard.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', e.target.dataset.id);
+        }
+
+        function handleDragEnd(e) {
+            if (draggedCard) {
+                draggedCard.classList.remove('dragging');
+                draggedCard = null;
+            }
+            document.querySelectorAll('.kanban-column').forEach(col => {
+                col.classList.remove('drag-over');
+            });
+        }
+
+        function initDragDrop() {
+            const columns = document.querySelectorAll('.kanban-column');
+            
+            columns.forEach(column => {
+                column.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    column.classList.add('drag-over');
+                });
+                
+                column.addEventListener('dragleave', (e) => {
+                    if (!column.contains(e.relatedTarget)) {
+                        column.classList.remove('drag-over');
+                    }
+                });
+                
+                column.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    column.classList.remove('drag-over');
+                    
+                    const ideaId = e.dataTransfer.getData('text/plain');
+                    const newColumn = column.dataset.column;
+                    const idea = ideas.find(i => i.id === ideaId);
+                    
+                    if (idea && idea.column !== newColumn) {
+                        const oldColumn = idea.column;
+                        idea.column = newColumn;
+                        saveData();
+                        renderBoard();
+                        
+                        // Show analytics modal when moving to published
+                        if (newColumn === 'published' && oldColumn !== 'published') {
+                            setTimeout(() => openAnalyticsModal(ideaId), 300);
+                        }
+                        
+                        showToast('Идея перемещена!');
+                    }
+                });
+            });
+        }
+
+        // ========== TOUCH DRAG (MOBILE) ==========
+        let touchDragId = null;
+        let touchStartY = 0;
+
+        function initTouchDrag() {
+            document.addEventListener('touchstart', (e) => {
+                const card = e.target.closest('.idea-card');
+                if (card) {
+                    touchDragId = card.dataset.id;
+                    touchStartY = e.touches[0].clientY;
+                }
+            }, { passive: true });
+
+            document.addEventListener('touchend', (e) => {
+                if (touchDragId) {
+                    const touchEndX = e.changedTouches[0].clientX;
+                    const column = document.elementFromPoint(touchEndX, e.changedTouches[0].clientY)?.closest('.kanban-column');
+                    
+                    if (column) {
+                        const newColumn = column.dataset.column;
+                        const idea = ideas.find(i => i.id === touchDragId);
+                        
+                        if (idea && idea.column !== newColumn) {
+                            const oldColumn = idea.column;
+                            idea.column = newColumn;
+                            saveData();
+                            renderBoard();
+                            
+                            if (newColumn === 'published' && oldColumn !== 'published') {
+                                setTimeout(() => openAnalyticsModal(touchDragId), 300);
+                            }
+                        }
+                    }
+                    
+                    touchDragId = null;
+                }
+            }, { passive: true });
+        }
+
+        // ========== MODALS ==========
+        function openModal(modalEl) {
+            modalEl.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(modalEl) {
+            modalEl.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function openCreateModal(idea = null) {
+            const form = elements.ideaForm;
+            const title = document.getElementById('modalTitle');
+            const saveBtn = document.getElementById('saveIdea');
+            
+            if (idea) {
+                title.textContent = 'Редактировать идею';
+                saveBtn.textContent = 'Сохранить изменения';
+                document.getElementById('ideaId').value = idea.id;
+                document.getElementById('ideaTitle').value = idea.title;
+                document.getElementById('ideaHook').value = idea.hook || '';
+                document.getElementById('ideaCategory').value = idea.category || '';
+                document.getElementById('ideaNotes').value = idea.notes || '';
+                document.getElementById('ideaReferences').value = idea.references || '';
+                document.getElementById('ideaDeadline').value = idea.deadline || '';
+            } else {
+                title.textContent = 'Новая идея';
+                saveBtn.textContent = 'Сохранить в INBOX';
+                form.reset();
+                document.getElementById('ideaId').value = '';
+            }
+            
+            openModal(elements.createModal);
+            document.getElementById('ideaTitle').focus();
+        }
+
+        function handleCardClick(e) {
+            const card = e.target.closest('.idea-card');
+            if (!card) return;
+            
+            const idea = ideas.find(i => i.id === card.dataset.id);
+            if (idea) openDetailModal(idea);
+        }
+
+        function openDetailModal(idea) {
+            currentDetailId = idea.id;
+            document.getElementById('detailTitle').textContent = idea.title;
+            
+            let html = '';
+            
+            // Category
+            if (idea.category) {
+                html += `<div class="detail-section">${getCategoryBadge(idea.category)}</div>`;
+            }
+            
+            // Hook
+            if (idea.hook) {
+                html += `
+                    <div class="detail-section">
+                        <h4 class="detail-section-title">Hook (первые 3 сек)</h4>
+                        <div class="detail-hook">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                            <span>${escapeHtml(idea.hook)}</span>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Notes
+            if (idea.notes) {
+                html += `
+                    <div class="detail-section">
+                        <h4 class="detail-section-title">Заметки</h4>
+                        <div class="detail-notes">${escapeHtml(idea.notes)}</div>
+                    </div>
+                `;
+            }
+            
+            // References
+            if (idea.references) {
+                const refs = idea.references.split('\n').filter(r => r.trim());
+                if (refs.length > 0) {
+                    html += `
+                        <div class="detail-section">
+                            <h4 class="detail-section-title">Референсы</h4>
+                            <div class="detail-references">
+                                ${refs.map(ref => `
+                                    <a href="${escapeHtml(ref)}" target="_blank" rel="noopener" class="reference-link">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                                        ${escapeHtml(ref)}
+                                    </a>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+            
+            // Deadline
+            if (idea.deadline) {
+                html += `
+                    <div class="detail-section">
+                        <h4 class="detail-section-title">Дедлайн</h4>
+                        <div class="detail-deadline ${isDeadlineSoon(idea.deadline) ? '' : ''}">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            ${new Date(idea.deadline).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Analytics
+            if (idea.analytics && idea.analytics.views) {
+                const a = idea.analytics;
+                const avg = getAverageViews();
+                const change = avg > 0 ? ((a.views - avg) / avg * 100).toFixed(0) : 0;
+                const retentionPct = a.duration && a.retention ? Math.round(a.retention / a.duration * 100) : 0;
+                
+                html += `
+                    <div class="detail-section">
+                        <h4 class="detail-section-title">Аналитика</h4>
+                        <div class="analytics-grid">
+                            <div class="analytics-card views">
+                                <div class="analytics-card-value">${formatNumber(a.views)}</div>
+                                <div class="analytics-card-label">Просмотры ${avg > 0 ? `(${change >= 0 ? '+' : ''}${change}% от среднего)` : ''}</div>
+                            </div>
+                            <div class="analytics-card">
+                                <div class="analytics-card-value">${formatNumber(a.comments || 0)}</div>
+                                <div class="analytics-card-label">Комментарии</div>
+                            </div>
+                            <div class="analytics-card">
+                                <div class="analytics-card-value">${formatNumber(a.reposts || 0)}</div>
+                                <div class="analytics-card-label">Репосты</div>
+                            </div>
+                            <div class="analytics-card">
+                                <div class="analytics-card-value">${formatNumber(a.saves || 0)}</div>
+                                <div class="analytics-card-label">Сохранения</div>
+                            </div>
+                            <div class="analytics-card">
+                                <div class="analytics-card-value">${a.reach || 0}%</div>
+                                <div class="analytics-card-label">Новая аудитория</div>
+                            </div>
+                            ${a.leads ? `
+                            <div class="analytics-card">
+                                <div class="analytics-card-value">${a.leads}</div>
+                                <div class="analytics-card-label">Лиды</div>
+                            </div>
+                            ` : ''}
+                        </div>
+                        ${a.retention && a.duration ? `
+                        <div class="retention-bar">
+                            <div class="retention-bar-label">
+                                <span>Удержание: ${a.retention} сек</span>
+                                <span>${retentionPct}%</span>
+                            </div>
+                            <div class="retention-bar-track">
+                                <div class="retention-bar-fill" style="width: ${retentionPct}%"></div>
+                            </div>
+                        </div>
+                        ` : ''}
+                        ${a.link ? `
+                        <a href="${escapeHtml(a.link)}" target="_blank" rel="noopener" class="reference-link" style="margin-top: 16px;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                            Открыть ролик
+                        </a>
+                        ` : ''}
+                    </div>
+                `;
+            }
+            
+            // Info
+            html += `
+                <div class="detail-section" style="margin-bottom: 0;">
+                    <p style="font-size: 0.75rem; color: var(--text-tertiary);">
+                        Создано: ${new Date(idea.createdAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
+                        <br>Колонка: ${idea.column.toUpperCase()}
+                    </p>
+                </div>
+            `;
+            
+            document.getElementById('detailBody').innerHTML = html;
+            
+            // Show/hide analytics button based on column
+            const showAnalyticsBtn = idea.column === 'published' || idea.column === 'analyzed';
+            document.getElementById('detailFooter').innerHTML = `
+                <button type="button" class="btn btn-secondary" id="editIdea">Редактировать</button>
+                ${showAnalyticsBtn ? '<button type="button" class="btn btn-secondary" id="analyticsIdea">📊 Аналитика</button>' : ''}
+                <button type="button" class="btn btn-secondary" id="duplicateIdea">Дублировать</button>
+                <button type="button" class="btn btn-danger" id="deleteIdea">Удалить</button>
+            `;
+            
+            // Attach listeners
+            document.getElementById('editIdea').addEventListener('click', () => {
+                closeModal(elements.detailModal);
+                openCreateModal(idea);
+            });
+            
+            document.getElementById('duplicateIdea').addEventListener('click', () => {
+                const newIdea = {
+                    ...idea,
+                    id: generateId(),
+                    title: idea.title + ' (копия)',
+                    createdAt: new Date().toISOString(),
+                    column: 'inbox',
+                    analytics: null
+                };
+                ideas.unshift(newIdea);
+                saveData();
+                renderBoard();
+                closeModal(elements.detailModal);
+                showToast('Идея дублирована!');
+            });
+            
+            document.getElementById('deleteIdea').addEventListener('click', () => {
+                if (confirm('Удалить эту идею?')) {
+                    ideas = ideas.filter(i => i.id !== idea.id);
+                    saveData();
+                    renderBoard();
+                    closeModal(elements.detailModal);
+                    showToast('Идея удалена');
+                }
+            });
+            
+            if (showAnalyticsBtn) {
+                document.getElementById('analyticsIdea').addEventListener('click', () => {
+                    closeModal(elements.detailModal);
+                    openAnalyticsModal(idea.id);
+                });
+            }
+            
+            openModal(elements.detailModal);
+        }
+
+        function openAnalyticsModal(ideaId) {
+            const idea = ideas.find(i => i.id === ideaId);
+            if (!idea) return;
+            
+            document.getElementById('analyticsIdeaId').value = ideaId;
+            
+            if (idea.analytics) {
+                document.getElementById('analyticsViews').value = idea.analytics.views || '';
+                document.getElementById('analyticsComments').value = idea.analytics.comments || '';
+                document.getElementById('analyticsReposts').value = idea.analytics.reposts || '';
+                document.getElementById('analyticsSaves').value = idea.analytics.saves || '';
+                document.getElementById('analyticsRetention').value = idea.analytics.retention || '';
+                document.getElementById('analyticsReach').value = idea.analytics.reach || '';
+                document.getElementById('analyticsLeads').value = idea.analytics.leads || '';
+                document.getElementById('analyticsLink').value = idea.analytics.link || '';
+                document.getElementById('analyticsDuration').value = idea.analytics.duration || '';
+            } else {
+                elements.analyticsForm.reset();
+                document.getElementById('analyticsIdeaId').value = ideaId;
+            }
+            
+            openModal(elements.analyticsModal);
+        }
+
+        // ========== FORM HANDLERS ==========
+        elements.ideaForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const id = document.getElementById('ideaId').value;
+            const ideaData = {
+                title: document.getElementById('ideaTitle').value.trim(),
+                hook: document.getElementById('ideaHook').value.trim(),
+                category: document.getElementById('ideaCategory').value,
+                notes: document.getElementById('ideaNotes').value.trim(),
+                references: document.getElementById('ideaReferences').value.trim(),
+                deadline: document.getElementById('ideaDeadline').value
+            };
+            
+            if (!ideaData.title) {
+                showToast('Введите заголовок идеи');
+                return;
+            }
+            
+            if (id) {
+                // Edit existing
+                const idx = ideas.findIndex(i => i.id === id);
+                if (idx !== -1) {
+                    ideas[idx] = { ...ideas[idx], ...ideaData };
+                }
+                showToast('Идея обновлена!');
+            } else {
+                // Create new
+                const newIdea = {
+                    id: generateId(),
+                    ...ideaData,
+                    column: 'inbox',
+                    createdAt: new Date().toISOString(),
+                    analytics: null
+                };
+                ideas.unshift(newIdea);
+                showToast('Идея создана!');
+            }
+            
+            saveData();
+            renderBoard();
+            closeModal(elements.createModal);
+        });
+
+        elements.analyticsForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const ideaId = document.getElementById('analyticsIdeaId').value;
+            const idea = ideas.find(i => i.id === ideaId);
+            if (!idea) return;
+            
+            idea.analytics = {
+                views: parseInt(document.getElementById('analyticsViews').value) || 0,
+                comments: parseInt(document.getElementById('analyticsComments').value) || 0,
+                reposts: parseInt(document.getElementById('analyticsReposts').value) || 0,
+                saves: parseInt(document.getElementById('analyticsSaves').value) || 0,
+                retention: parseInt(document.getElementById('analyticsRetention').value) || 0,
+                reach: parseInt(document.getElementById('analyticsReach').value) || 0,
+                leads: parseInt(document.getElementById('analyticsLeads').value) || 0,
+                link: document.getElementById('analyticsLink').value.trim(),
+                duration: parseInt(document.getElementById('analyticsDuration').value) || 0
+            };
+            
+            saveData();
+            renderBoard();
+            closeModal(elements.analyticsModal);
+            showToast('Аналитика сохранена!');
+        });
+
+        // ========== SETTINGS ==========
+        function openSettings() {
+            elements.settingsPanel.classList.add('active');
+            elements.settingsOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSettings() {
+            elements.settingsPanel.classList.remove('active');
+            elements.settingsOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function updateThresholdInputs() {
+            document.getElementById('thresholdViral').value = settings.thresholdViral;
+            document.getElementById('thresholdAverage').value = settings.thresholdAverage;
+        }
+
+        document.getElementById('thresholdViral').addEventListener('change', (e) => {
+            settings.thresholdViral = parseInt(e.target.value) || 500000;
+            saveData();
+            renderBoard();
+        });
+
+        document.getElementById('thresholdAverage').addEventListener('change', (e) => {
+            settings.thresholdAverage = parseInt(e.target.value) || 50000;
+            saveData();
+            renderBoard();
+        });
+
+        // Export/Import
+        document.getElementById('exportData').addEventListener('click', () => {
+            const data = JSON.stringify({ ideas, settings }, null, 2);
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `idea-vault-backup-${new Date().toISOString().slice(0,10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('Данные экспортированы!');
+        });
+
+        document.getElementById('importData').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const data = JSON.parse(event.target.result);
+                    if (data.ideas) {
+                        ideas = data.ideas;
+                        settings = { ...settings, ...data.settings };
+                        saveData();
+                        renderBoard();
+                        updateThresholdInputs();
+                        showToast('Данные импортированы!');
+                    }
+                } catch (err) {
+                    showToast('Ошибка импорта файла');
+                }
+            };
+            reader.readAsText(file);
+            e.target.value = '';
+        });
+
+        document.getElementById('clearData').addEventListener('click', () => {
+            if (confirm('Удалить ВСЕ данные? Это действие нельзя отменить!')) {
+                ideas = [];
+                localStorage.removeItem(APP_KEY);
+                renderBoard();
+                showToast('Все данные удалены');
+            }
+        });
+
+        // ========== EVENT LISTENERS ==========
+        elements.fabBtn.addEventListener('click', () => openCreateModal());
+        
+        document.getElementById('closeCreateModal').addEventListener('click', () => closeModal(elements.createModal));
+        document.getElementById('cancelCreate').addEventListener('click', () => closeModal(elements.createModal));
+        
+        document.getElementById('closeDetailModal').addEventListener('click', () => closeModal(elements.detailModal));
+        
+        document.getElementById('closeAnalyticsModal').addEventListener('click', () => closeModal(elements.analyticsModal));
+        document.getElementById('skipAnalytics').addEventListener('click', () => closeModal(elements.analyticsModal));
+        
+        document.getElementById('settingsBtn').addEventListener('click', openSettings);
+        document.getElementById('closeSettings').addEventListener('click', closeSettings);
+        elements.settingsOverlay.addEventListener('click', closeSettings);
+
+        // Filters
+        elements.searchInput.addEventListener('input', renderBoard);
+        elements.categoryFilter.addEventListener('change', renderBoard);
+        elements.periodFilter.addEventListener('change', renderBoard);
+
+        // Close modals on overlay click
+        [elements.createModal, elements.detailModal, elements.analyticsModal].forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal(modal);
+            });
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal(elements.createModal);
+                closeModal(elements.detailModal);
+                closeModal(elements.analyticsModal);
+                closeSettings();
+            }
+            if (e.key === 'n' && (e.metaKey || e.ctrlKey)) {
+                e.preventDefault();
+                openCreateModal();
+            }
+        });
+
+        // ========== INIT ==========
+        function init() {
+            loadData();
+            renderBoard();
+            initDragDrop();
+            initTouchDrag();
+            
+            // Add demo ideas if empty
+            if (ideas.length === 0) {
+                ideas = [
+                    {
+                        id: generateId(),
+                        title: 'Как за 30 дней набрать первые 10K подписчиков',
+                        hook: 'Вот что никто не говорит о росте в Instagram...',
+                        category: 'growth',
+                        notes: 'Разобрать 3 главные стратегии:\n1. Viral Reels формула\n2. Коллаборации\n3. Consistency система',
+                        references: 'https://instagram.com/example',
+                        deadline: '',
+                        column: 'inbox',
+                        createdAt: new Date().toISOString(),
+                        analytics: null
+                    },
+                    {
+                        id: generateId(),
+                        title: '5 ошибок в запусках которые убивают продажи',
+                        hook: 'Я потерял 500K на этих ошибках...',
+                        category: 'monetization',
+                        notes: '',
+                        references: '',
+                        deadline: '',
+                        column: 'ready',
+                        createdAt: new Date(Date.now() - 86400000).toISOString(),
+                        analytics: null
+                    },
+                    {
+                        id: generateId(),
+                        title: 'Почему контент-план не работает',
+                        hook: '',
+                        category: 'marketing',
+                        notes: 'Система вместо плана. Content flywheel.',
+                        references: '',
+                        deadline: '',
+                        column: 'published',
+                        createdAt: new Date(Date.now() - 172800000).toISOString(),
+                        analytics: {
+                            views: 250000,
+                            comments: 850,
+                            reposts: 320,
+                            saves: 2100,
+                            retention: 12,
+                            reach: 78,
+                            leads: 15,
+                            link: '',
+                            duration: 30
+                        }
+                    },
+                    {
+                        id: generateId(),
+                        title: 'Как выбрать нишу для онлайн-бизнеса',
+                        hook: 'Забудь про "найди страсть"...',
+                        category: 'marketing',
+                        notes: '',
+                        references: '',
+                        deadline: '',
+                        column: 'analyzed',
+                        createdAt: new Date(Date.now() - 604800000).toISOString(),
+                        analytics: {
+                            views: 720000,
+                            comments: 2400,
+                            reposts: 890,
+                            saves: 5600,
+                            retention: 18,
+                            reach: 85,
+                            leads: 45,
+                            link: '',
+                            duration: 35
+                        }
+                    }
+                ];
+                saveData();
+                renderBoard();
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>
